@@ -25,8 +25,7 @@
 //   * Code this app to calculate when the next train will arrive; this should be relative to the current time.
   
 //   * Users from many different machines must be able to view same train times.
-  
-//   * Styling and theme are completely up to you. Get Creative!
+
 
 
   var firebaseConfig = {
@@ -75,7 +74,7 @@
       console.log("Minutes left: " + tLeft);
 
       //time next train arrives
-      var nextTrain = moment().add(tLeft, "minutes");
+      var nextTrain = moment().add(tLeft, "minutes").format("MM");
       console.log("ARRIVAL TIME: " + moment(nextTrain).format("HH:mm"));
     
       //creates local temporary object for the train data
@@ -86,7 +85,56 @@
           frequency: frequency,
           tLeft: tLeft,
           nextTrain: nextTrain
-      };
+      };    
+      console.log(newTrain);
 
+      //uploads train data to the database
+      database.ref().push(newTrain);
 
-  })
+      console.log(newTrain.trainName);
+      console.log(newTrain.destination);
+      console.log(newTrain.firstTrain);
+      console.log(newTrain.frequency);
+      console.log(newTrain.tLeft);
+      console.log(newTrain.nextTrain);
+
+      //clears all input boxes
+      $('#train-name-input').val("");
+      $('#destination-input').val("");
+      $('#first-train-input').val("");
+      $('#frequency-input').val("");
+
+  });
+
+  database.ref().on('child_added', function(childSnapshot){
+      console.log(childSnapshot.val());
+
+      //store everything in a variable
+      var train = childSnapshot.val().trainName;
+      var dest = childSnapshot.val().destination;
+      var first = childSnapshot.val().firstTrain;
+      var freq = childSnapshot.val().frequency;
+      var left = childSnapshot.val().tLeft;
+      var next = childSnapshot.val().nextTrain;
+
+      console.log(train);
+      console.log(dest);
+      console.log(first);
+      console.log(freq);
+      console.log(left);
+      console.log(next);
+
+      //create new row for data
+      var newRow = $("<tr>").append(
+        $("<td>").text(train),
+        $("<td>").text(dest),
+        $("<td>").text(first),
+        $("<td>").text(freq),
+        $("<td>").text(left),
+        $("<td>").text(next)
+      );
+
+      //append new row to table
+      $("#train-table").append(newRow);
+
+  });
